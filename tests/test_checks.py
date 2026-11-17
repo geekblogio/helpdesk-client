@@ -49,3 +49,25 @@ class CheckTests(SimpleTestCase):
     @override_settings(HELPDESK_CONTACT_RESOLVER="")
     def test_contact_resolver_is_required(self):
         self.assertEqual(ids(check_settings()), ["helpdesk_client.E006"])
+
+    @override_settings(HELPDESK_USER_ID_RESOLVER="nowhere.user_id")
+    def test_user_id_resolver_must_import(self):
+        self.assertEqual(ids(check_settings()), ["helpdesk_client.E006"])
+
+    @override_settings(HELPDESK_USER_ID_RESOLVER="")
+    def test_user_id_resolver_is_required(self):
+        self.assertEqual(ids(check_settings()), ["helpdesk_client.E006"])
+
+    @override_settings(HELPDESK_UNREAD_CACHE_TIMEOUT=-1, HELPDESK_CONFIG_CACHE_TIMEOUT=1.5, HELPDESK_UNREAD_TIMEOUT=0)
+    def test_cache_timeouts_and_badge_timeout(self):
+        self.assertEqual(
+            ids(check_settings()), ["helpdesk_client.E004", "helpdesk_client.E007", "helpdesk_client.E007"]
+        )
+
+    @override_settings(HELPDESK_CACHE="redis")
+    def test_cache_alias_must_exist(self):
+        self.assertEqual(ids(check_settings()), ["helpdesk_client.E008"])
+
+    @override_settings(HELPDESK_WEBHOOK_SECRET=None)
+    def test_webhook_secret_must_be_a_string(self):
+        self.assertEqual(ids(check_settings()), ["helpdesk_client.E009"])

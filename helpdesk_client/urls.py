@@ -7,6 +7,7 @@ Mount them in the website's urls.py with a prefix of your choice, e.g.
 from django.urls import path
 
 from . import views
+from .webhooks import WebhookView
 
 app_name = "helpdesk_client"
 
@@ -21,4 +22,6 @@ urlpatterns = [
         views.AttachmentDownloadView.as_view(),
         name="attachment_download",
     ),
+    # No login: the helpdesk calls it, the signature authenticates it (404 without HELPDESK_WEBHOOK_SECRET).
+    path("webhook/", WebhookView.as_view(), name="webhook"),
 ]

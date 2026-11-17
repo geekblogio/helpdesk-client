@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: helpdesk-client\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 08:59+0000\n"
+"POT-Creation-Date: 2026-11-17 14:03+0000\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -14,6 +14,14 @@ msgstr ""
 #: apps.py templates/helpdesk_client/base.html
 msgid "Support"
 msgstr "Support"
+
+#: forms.py
+#, python-format
+msgid "Up to %(count)d file of up to %(size)s. Allowed types: %(types)s."
+msgid_plural ""
+"Up to %(count)d files, each up to %(size)s. Allowed types: %(types)s."
+msgstr[0] "Bis zu %(count)d Datei mit bis zu %(size)s. Erlaubte Typen: %(types)s."
+msgstr[1] "Bis zu %(count)d Dateien, je bis zu %(size)s. Erlaubte Typen: %(types)s."
 
 #: forms.py
 #, python-format
@@ -61,14 +69,40 @@ msgstr "Anhänge"
 msgid "Your reply"
 msgstr "Ihre Antwort"
 
-#: forms.py
+#: models.py
+msgid "external user id"
+msgstr "externe Benutzer-ID"
+
+#: models.py
+msgid "created"
+msgstr "erstellt"
+
+#: models.py
+msgid "attempts"
+msgstr "Versuche"
+
+#: models.py
+msgid "last attempt"
+msgstr "letzter Versuch"
+
+#: models.py
+msgid "last error"
+msgstr "letzter Fehler"
+
+#: models.py
+msgid "pending anonymization"
+msgstr "ausstehende Anonymisierung"
+
+#: models.py
+msgid "pending anonymizations"
+msgstr "ausstehende Anonymisierungen"
+
+#: templates/helpdesk_client/includes/unread_badge.html
 #, python-format
-msgid ""
-"Up to %(count)d files, each up to %(size)s: images (PNG, JPEG, GIF, WebP), "
-"PDF, TXT, LOG."
-msgstr ""
-"Bis zu %(count)d Dateien, je bis zu %(size)s: Bilder (PNG, JPEG, GIF, WebP), "
-"PDF, TXT, LOG."
+msgid "%(counter)s unread answer"
+msgid_plural "%(counter)s unread answers"
+msgstr[0] "%(counter)s ungelesene Antwort"
+msgstr[1] "%(counter)s ungelesene Antworten"
 
 #: templates/helpdesk_client/ticket_detail.html
 #: templates/helpdesk_client/ticket_form.html
@@ -230,6 +264,10 @@ msgid ""
 msgstr ""
 "Unser Support-System ist gerade nicht erreichbar. Bitte versuchen Sie es in "
 "ein paar Minuten erneut."
+
+#: views.py
+msgid "This category cannot be chosen. Please choose another one."
+msgstr "Diese Kategorie kann nicht gewählt werden. Bitte wählen Sie eine andere."
 
 #: views.py
 msgid "This value was not accepted."

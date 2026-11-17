@@ -2,7 +2,8 @@
 
 Replace the default with the setting ``HELPDESK_CONTACT_RESOLVER`` (dotted path
 to a ``callable(request) -> Contact``), e.g. when the user model has no
-``get_full_name`` or another field is the stable id.
+``get_full_name``. Another stable id goes into ``HELPDESK_USER_ID_RESOLVER``
+(``callable(user) -> str``); the delete hook needs it without a request.
 """
 
 from django.http import HttpRequest
@@ -13,12 +14,22 @@ from . import conf
 from .client import Contact
 
 
+def external_id_for_user(user) -> str:
+    """Default ``HELPDESK_USER_ID_RESOLVER``: the user's primary key."""
+    return str(user.pk)
+
+
+def get_external_id(user) -> str:
+    """The stable ``external_user_id`` of ``user`` (``HELPDESK_USER_ID_RESOLVER``)."""
+    return str(import_string(conf.get("HELPDESK_USER_ID_RESOLVER"))(user))
+
+
 def contact_from_request(request: HttpRequest) -> Contact:
-    """Default: primary key as ``external_id``, email, full name and the active language."""
+    """Default: ``HELPDESK_USER_ID_RESOLVER`` (the primary key), email, full name and the active language."""
     user = request.user
     get_full_name = getattr(user, "get_full_name", None)
     return Contact(
-        external_id=str(user.pk),
+        external_id=get_external_id(user),
         email=getattr(user, "email", "") or "",
         name=(get_full_name() if callable(get_full_name) else "") or "",
         language=translation.get_language() or "",

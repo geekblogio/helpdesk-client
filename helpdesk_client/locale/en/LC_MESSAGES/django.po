@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: helpdesk-client\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 08:59+0000\n"
+"POT-Creation-Date: 2026-11-17 14:03+0000\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -14,6 +14,14 @@ msgstr ""
 #: apps.py templates/helpdesk_client/base.html
 msgid "Support"
 msgstr ""
+
+#: forms.py
+#, python-format
+msgid "Up to %(count)d file of up to %(size)s. Allowed types: %(types)s."
+msgid_plural ""
+"Up to %(count)d files, each up to %(size)s. Allowed types: %(types)s."
+msgstr[0] ""
+msgstr[1] ""
 
 #: forms.py
 #, python-format
@@ -61,12 +69,40 @@ msgstr ""
 msgid "Your reply"
 msgstr ""
 
-#: forms.py
-#, python-format
-msgid ""
-"Up to %(count)d files, each up to %(size)s: images (PNG, JPEG, GIF, WebP), "
-"PDF, TXT, LOG."
+#: models.py
+msgid "external user id"
 msgstr ""
+
+#: models.py
+msgid "created"
+msgstr ""
+
+#: models.py
+msgid "attempts"
+msgstr ""
+
+#: models.py
+msgid "last attempt"
+msgstr ""
+
+#: models.py
+msgid "last error"
+msgstr ""
+
+#: models.py
+msgid "pending anonymization"
+msgstr ""
+
+#: models.py
+msgid "pending anonymizations"
+msgstr ""
+
+#: templates/helpdesk_client/includes/unread_badge.html
+#, python-format
+msgid "%(counter)s unread answer"
+msgid_plural "%(counter)s unread answers"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/helpdesk_client/ticket_detail.html
 #: templates/helpdesk_client/ticket_form.html
@@ -218,6 +254,10 @@ msgstr ""
 msgid ""
 "We cannot reach our support system right now. Please try again in a few "
 "minutes."
+msgstr ""
+
+#: views.py
+msgid "This category cannot be chosen. Please choose another one."
 msgstr ""
 
 #: views.py

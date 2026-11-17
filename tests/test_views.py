@@ -10,9 +10,9 @@ from django.urls import reverse
 from helpdesk_client.client import Contact
 
 from .support import (
-    CATEGORIES,
     LoggedInTestCase,
     MockedApiTestCase,
+    config_json,
     error_json,
     list_item,
     page_json,
@@ -138,7 +138,7 @@ class TicketCreateTests(LoggedInTestCase):
 
     def setUp(self):
         super().setUp()
-        self.api.get(url("categories"), json=CATEGORIES)
+        self.api.get(url("config"), json=config_json())
 
     def post_form(self, **data):
         form = {"subject": "Login klappt nicht", "body": "Seit heute **nicht**.", "category": "3"}
@@ -150,10 +150,12 @@ class TicketCreateTests(LoggedInTestCase):
         self.assertContains(response, '<option value="4">Rechnung</option>', html=True)
         self.assertContains(response, 'enctype="multipart/form-data"')
         self.assertContains(response, 'accept=".png,.jpg,.jpeg,.gif,.webp,.pdf,.txt,.log"')
+        self.assertContains(response, "Bis zu 5 Dateien, je bis zu 10,0 MB. Erlaubte Typen: PNG, JPG, JPEG")
         self.assertEqual(self.api.calls[0].request.params, {"language": "de"})
+        self.assertEqual(len(self.api.calls), 1)
 
     def test_without_categories_the_field_is_left_out(self):
-        self.api.replace(responses.GET, url("categories"), json=[])
+        self.api.replace(responses.GET, url("config"), json=config_json(categories=[]))
         response = self.client.get(self.path)
         self.assertNotContains(response, 'name="category"')
         self.api.add(responses.POST, url("tickets"), json=ticket_json(13), status=201)
@@ -262,6 +264,10 @@ class TicketCreateTests(LoggedInTestCase):
 class TicketDetailTests(LoggedInTestCase):
     path = reverse("helpdesk_client:ticket_detail", args=[12])
 
+    def setUp(self):
+        super().setUp()
+        self.api.get(url("config"), json=config_json())
+
     def test_shows_history_attachments_and_forms(self):
         self.api.get(url("tickets/12"), json=ticket_json(12))
         response = self.client.get(self.path)
@@ -274,13 +280,17 @@ class TicketDetailTests(LoggedInTestCase):
         self.assertContains(response, 'action="/support/12/close/"')
         self.assertContains(response, "Technik")
         self.assertContains(response, "Christian")
-        self.assertEqual(len(self.api.calls), 1)  # read already: not marked again
+        # Read already: not marked again. The config is for the reply form.
+        self.assertEqual([c.request.url for c in self.api.calls], [url("tickets/12"), url("config?language=de")])
 
     def test_opening_an_unread_ticket_marks_it_read(self):
         self.api.get(url("tickets/12"), json=ticket_json(12, unread=True))
         self.api.post(url("tickets/12/read"), json={"unread_count": 0})
         self.client.get(self.path)
-        self.assertEqual([c.request.url for c in self.api.calls], [url("tickets/12"), url("tickets/12/read")])
+        self.assertEqual(
+            [c.request.url for c in self.api.calls],
+            [url("tickets/12"), url("tickets/12/read"), url("config?language=de")],
+        )
         self.assertEqual(self.contact_headers(self.api.calls[1])["X-Contact-Id"], str(self.user.pk))
 
     def test_failing_mark_read_does_not_break_the_page(self):
@@ -315,16 +325,20 @@ class TicketDetailTests(LoggedInTestCase):
 class TicketReplyTests(LoggedInTestCase):
     path = reverse("helpdesk_client:ticket_reply", args=[12])
 
+    def setUp(self):
+        super().setUp()
+        self.api.get(url("config"), json=config_json())
+
     def test_reply_is_sent_and_redirects(self):
         self.api.post(url("tickets/12/messages"), json=ticket_json(12), status=201)
         response = self.client.post(self.path, {"body": "Danke, geht wieder."})
         self.assertRedirects(response, "/support/12/", fetch_redirect_response=False)
-        self.assertEqual(json.loads(self.api.calls[0].request.body), {"body": "Danke, geht wieder."})
+        self.assertEqual(json.loads(self.api.calls[-1].request.body), {"body": "Danke, geht wieder."})
 
     def test_reply_with_attachment(self):
         self.api.post(url("tickets/12/messages"), json=ticket_json(12), status=201)
         self.client.post(self.path, {"body": "Anbei", "attachments": [SimpleUploadedFile("a.pdf", b"%PDF-1.7")]})
-        self.assertIn(b'filename="a.pdf"', self.api.calls[0].request.body)
+        self.assertIn(b'filename="a.pdf"', self.api.calls[-1].request.body)
 
     def test_empty_reply_shows_the_ticket_with_the_error(self):
         self.api.get(url("tickets/12"), json=ticket_json(12))

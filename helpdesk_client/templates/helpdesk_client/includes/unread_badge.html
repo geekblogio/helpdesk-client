@@ -1,0 +1,1 @@
+{% load i18n %}{% if unread_count %}<span class="helpdesk-badge" title="{% blocktranslate count counter=unread_count %}{{ counter }} unread answer{% plural %}{{ counter }} unread answers{% endblocktranslate %}">{{ unread_count }}</span>{% endif %}

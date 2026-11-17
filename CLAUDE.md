@@ -19,12 +19,19 @@ helpdesk_client/
   client.py      API-Client (requests): Contact, HelpdeskClient, HelpdeskApiError, HelpdeskUnavailable
   conf.py        Settings mit Defaults (immer zur Laufzeit lesen: conf.get)
   checks.py      System-Checks helpdesk_client.E001…
-  contact.py     request -> Contact, Metadaten (beides per Setting austauschbar)
-  forms.py       Formulare, Anhang-Regeln wie in der API
+  contact.py     request -> Contact, user -> external_id, Metadaten (per Setting austauschbar)
+  siteconfig.py  GET /config gecacht (Kategorien, Anhang-Regeln) mit Fallback
+  cache.py       Cache-Keys (gehasht) für Badge, Config, Webhook-IDs
+  badge.py       Ungelesen-Zahl für die Template-Tags in templatetags/helpdesk_client.py
+  hooks.py       Lösch-Hook (post_delete -> DELETE /contacts/{id}), models.PendingAnonymization,
+                 Command helpdesk_anonymize für Wiederholungen
+  webhooks.py    Webhook-Empfänger (Signatur wie docs/api.md), Signal in signals.py
+  forms.py       Formulare, Anhang-Regeln aus siteconfig
   views.py       Views mit Login-Pflicht; API-Fehler -> Fehlerseiten
   templates/     überschreibbar, schlichtes Markup, Klassen mit Präfix helpdesk-
   locale/        de, en; .mo-Dateien sind eingecheckt
 tests/           Testprojekt (settings, urls, base.html) und Tests gegen eine mit responses gemockte API
+.github/         CI (ubuntu-latest, Matrix Python/Django), Release per Tag v*
 ```
 
 ## Befehle

@@ -1,0 +1,26 @@
+# Configures GitHub's auto-generated release notes (used by the Release
+# workflow and the "Generate release notes" button). PRs are grouped into the
+# categories below by their labels; the last catch-all category collects the
+# rest. Apply labels to PRs to sort them.
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+  categories:
+    - title: 🚀 Features
+      labels:
+        - enhancement
+        - feature
+    - title: 🐛 Fixes
+      labels:
+        - bug
+        - fix
+    - title: 📚 Documentation
+      labels:
+        - documentation
+    - title: ⬆️ Dependencies
+      labels:
+        - dependencies
+    - title: 🔧 Other Changes
+      labels:
+        - "*"

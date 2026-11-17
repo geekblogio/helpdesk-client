@@ -1,6 +1,6 @@
 [project]
 name = "helpdesk-client"
-version = "0.1.0.dev0"
+version = "0.1.0"
 description = "Django app that lets logged-in users of a website talk to the self-hosted helpdesk"
 authors = [{ name = "Christian Prehl", email = "christian@prehl.de" }]
 readme = "README.md"

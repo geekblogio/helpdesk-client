@@ -1,0 +1,65 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Run only the latest commit per ref; a new push cancels the run it supersedes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+# GitHub-hosted runners: the package needs neither Docker nor services, so a fresh
+# VM per job is enough. The self-hosted runner of the helpdesk repo (nyx-helpdesk)
+# exists for its Docker build cache and is registered for that repository only.
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: pipx install poetry
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: poetry
+      - run: poetry install --no-interaction
+      - name: ruff
+        run: |
+          poetry run ruff check --output-format=github .
+          poetry run ruff format --check .
+
+  test:
+    name: test (Python ${{ matrix.python }}, Django ${{ matrix.django }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Supported: Python >= 3.14, Django 6.x (pyproject.toml). Add Django 6.2 here when it is out.
+        python: ["3.14", "3.15"]
+        django: ["6.1"]
+    steps:
+      - uses: actions/checkout@v7
+      - run: pipx install poetry
+      - uses: actions/setup-python@v6
+        id: python
+        with:
+          python-version: ${{ matrix.python }}
+          cache: poetry
+      - name: Install
+        run: |
+          poetry env use "${{ steps.python.outputs.python-path }}"
+          poetry install --no-interaction
+          poetry run python -m pip install --quiet "Django==${{ matrix.django }}.*"
+          poetry run python -m django --version
+      - name: Check for missing migrations
+        run: poetry run python manage.py makemigrations --check --dry-run helpdesk_client
+      # fail_under in pyproject.toml makes `coverage report` the gate.
+      - name: Tests with coverage
+        run: |
+          poetry run coverage run manage.py test --verbosity 2
+          poetry run coverage report

@@ -8,4 +8,6 @@ class HelpdeskClientConfig(AppConfig):
     verbose_name = _("Support")
 
     def ready(self):
-        from . import checks  # noqa: F401  (registers the system checks)
+        from . import checks, hooks  # noqa: F401  (checks registers the system checks)
+
+        hooks.connect()

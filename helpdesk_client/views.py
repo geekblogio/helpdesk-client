@@ -18,9 +18,11 @@ from django.utils.translation import gettext as _
 from django.views.generic import FormView, TemplateView, View
 
 from . import conf
+from .cache import set_unread_count
 from .client import HelpdeskApiError, HelpdeskClient, HelpdeskError, HelpdeskUnavailable
 from .contact import get_contact, get_metadata
 from .forms import ReplyForm, TicketForm
+from .siteconfig import AttachmentRules, get_site_config, invalidate_site_config
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +63,13 @@ class HelpdeskMixin(LoginRequiredMixin):
         context = super().get_context_data(**kwargs)
         context["helpdesk_base_template"] = conf.get("HELPDESK_BASE_TEMPLATE")
         return context
+
+    @property
+    def language(self) -> str | None:
+        return self.contact.language or None
+
+    def attachment_rules(self) -> AttachmentRules:
+        return get_site_config(self.language, client=self.api).attachments
 
     # --- Error pages ----------------------------------------------------------
 
@@ -106,22 +115,34 @@ def apply_api_errors(form: Form, exc: HelpdeskApiError, fields: dict[str, str]) 
     if exc.code in ATTACHMENT_ERROR_CODES:
         form.add_error("attachments", _attachment_error_message(form, exc))
         return True
-    if exc.code == "validation_error":
-        targets = set()
-        for detail in exc.details:
-            loc = [str(part) for part in detail.get("loc", [])]
-            key = loc[2] if loc[:2] == ["body", "payload"] and len(loc) > 2 else None
-            target = fields.get(key)
-            targets.add(target if target in form.fields else None)
+    if exc.code in ("validation_error", "invalid_input"):
+        # Both carry details[].loc = ["body", "payload", <key>] when a field is the cause
+        # (invalid_input for an unknown, inactive or foreign category).
+        targets = error_fields(form, exc, fields)
         for target in sorted(targets, key=lambda t: t or ""):
-            form.add_error(target, _("This value was not accepted.") if target else _invalid_input_message())
+            form.add_error(target, _field_error_message(target) if target else _invalid_input_message())
         if not targets:
             form.add_error(None, _invalid_input_message())
         return True
-    if exc.code == "invalid_input":
-        form.add_error(None, _invalid_input_message())
-        return True
     return False
+
+
+def error_fields(form: Form, exc: HelpdeskApiError, fields: dict[str, str]) -> set[str | None]:
+    """Form fields named by the error's ``details[].loc``; None for a detail without a known field."""
+    targets = set()
+    for detail in exc.details:
+        loc = detail.get("loc") if isinstance(detail, dict) else None
+        loc = [str(part) for part in loc] if isinstance(loc, list) else []
+        key = loc[2] if loc[:2] == ["body", "payload"] and len(loc) > 2 else None
+        target = fields.get(key)
+        targets.add(target if target in form.fields else None)
+    return targets
+
+
+def _field_error_message(field: str) -> str:
+    if field == "category":
+        return _("This category cannot be chosen. Please choose another one.")
+    return _("This value was not accepted.")
 
 
 def _invalid_input_message() -> str:
@@ -181,8 +202,14 @@ class TicketCreateView(HelpdeskMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["categories"] = self.api.categories(language=self.contact.language or None)
+        config = get_site_config(self.language, client=self.api)
+        kwargs["categories"] = self.categories(config.categories)
+        kwargs["attachment_rules"] = config.attachments
         return kwargs
+
+    def categories(self, categories: list[dict] | None) -> list[dict]:
+        # None: the config could not be loaded; ask for the categories alone.
+        return categories if categories is not None else self.api.categories(language=self.language)
 
     def form_valid(self, form):
         data = form.cleaned_data
@@ -197,6 +224,13 @@ class TicketCreateView(HelpdeskMixin, FormView):
             )
         except HelpdeskApiError as exc:
             if apply_api_errors(form, exc, {"subject": "subject", "body": "body", "category_id": "category"}):
+                if form.has_error("category"):
+                    # The cached categories are out of date: offer the current ones.
+                    invalidate_site_config(self.language)
+                    form.set_categories(self.categories(get_site_config(self.language, client=self.api).categories))
+                    if "category" not in form.fields:
+                        # No category left to choose: show the error above the form.
+                        form.add_error(None, form.errors.pop("category"))
                 return self.form_invalid(form)
             raise
         messages.success(
@@ -216,15 +250,17 @@ class TicketDetailView(HelpdeskMixin, TemplateView):
         ticket = self.api.ticket(self.contact, number)
         if ticket.get("unread"):
             try:
-                self.api.mark_read(self.contact, number)
+                remaining = self.api.mark_read(self.contact, number)
             except HelpdeskError:
                 # Not worth an error page: the ticket stays unread and is marked next time.
                 logger.warning("Could not mark ticket %s as read", number)
+            else:
+                set_unread_count(self.contact.external_id, remaining)
         return self.render_detail(ticket)
 
     def render_detail(self, ticket: dict, *, reply_form: ReplyForm | None = None, **extra) -> HttpResponse:
         if reply_form is None and ticket.get("can_reply"):
-            reply_form = ReplyForm()
+            reply_form = ReplyForm(attachment_rules=self.attachment_rules())
         context = self.get_context_data(ticket=ticket, reply_form=reply_form, **extra)
         return self.render_to_response(context)
 
@@ -235,7 +271,7 @@ class TicketReplyView(TicketDetailView):
     http_method_names = ["post"]
 
     def post(self, request, *args, number: int, **kwargs):
-        form = ReplyForm(request.POST, request.FILES)
+        form = ReplyForm(request.POST, request.FILES, attachment_rules=self.attachment_rules())
         if form.is_valid():
             try:
                 self.api.reply(
