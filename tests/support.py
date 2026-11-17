@@ -5,6 +5,7 @@ from urllib.parse import unquote
 
 import responses
 from django.contrib.auth import get_user_model
+from django.core.cache import caches
 from django.test import TestCase
 
 API = "https://helpdesk.test/api/v1/"
@@ -80,11 +81,35 @@ CATEGORIES = [
 ]
 
 
+def config_json(*, categories=None, **attachments) -> dict:
+    """``GET /config`` as the API answers it; ``attachments`` overrides single rules."""
+    rules = {
+        "max_files": 5,
+        "max_file_size": 10 * 1024 * 1024,
+        "allowed_extensions": [".png", ".jpg", ".jpeg", ".gif", ".webp", ".pdf", ".txt", ".log"],
+        "content_types": ["application/pdf", "image/gif", "image/jpeg", "image/png", "image/webp", "text/plain"],
+    }
+    rules.update(attachments)
+    return {
+        "name": "WebServerCenter",
+        "prefix": "WSC",
+        "languages": ["de", "en"],
+        "language": "de",
+        "categories": CATEGORIES if categories is None else categories,
+        "attachments": rules,
+    }
+
+
 class MockedApiTestCase(TestCase):
-    """Every HTTP call goes to ``self.api`` (a ``responses`` mock); unmatched calls fail."""
+    """Every HTTP call goes to ``self.api`` (a ``responses`` mock); unmatched calls fail.
+
+    The cache (unread counts, site config, webhook ids) starts empty in every test.
+    """
 
     def setUp(self):
         super().setUp()
+        caches["default"].clear()
+        self.addCleanup(caches["default"].clear)
         self.api = responses.RequestsMock(assert_all_requests_are_fired=False)
         self.api.start()
         self.addCleanup(self.api.stop)

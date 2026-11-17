@@ -188,6 +188,26 @@ class HelpdeskClient:
 
     # --- Endpoints ------------------------------------------------------------
 
+    def config(self, language: str | None = None) -> dict:
+        """Site config: ``{name, prefix, languages, language, categories, attachments}``.
+
+        ``attachments`` holds ``max_files``, ``max_file_size`` (bytes), ``allowed_extensions``
+        and ``content_types``. Cached use goes through :mod:`helpdesk_client.siteconfig`.
+        """
+        params = {"language": language} if language else None
+        return self._json("GET", "config", params=params)
+
+    def anonymize_contact(self, external_id: str) -> dict:
+        """Anonymize the site's contact with this id: ``{anonymized, tickets}``.
+
+        Repeatable and never 404: ``anonymized: false`` means there was nothing (left) to anonymize.
+        The id is left out of the client's logs.
+        """
+        external_id = str(external_id).strip()
+        if not external_id or len(external_id) > MAX_EXTERNAL_ID_LENGTH:
+            raise ValueError(f"external_id must have 1 to {MAX_EXTERNAL_ID_LENGTH} characters")
+        return self._json("DELETE", f"contacts/{_encode(external_id)}", log_path="contacts/<id>")
+
     def categories(self, language: str | None = None) -> list[dict]:
         """Active categories of the site; ``name`` in ``language`` (the site's default if omitted)."""
         params = {"language": language} if language else None
@@ -266,7 +286,8 @@ class HelpdeskClient:
         try:
             return response.json()
         except ValueError as exc:
-            logger.warning("Helpdesk API %s %s answered %s without JSON", method, path, response.status_code)
+            log_path = kwargs.get("log_path") or path
+            logger.warning("Helpdesk API %s %s answered %s without JSON", method, log_path, response.status_code)
             raise HelpdeskUnavailable("The helpdesk answered without JSON") from exc
 
     def _request(
@@ -277,9 +298,12 @@ class HelpdeskClient:
         *,
         timeout: float | None = None,
         stream: bool = False,
+        log_path: str | None = None,
         **kwargs,
     ) -> requests.Response:
+        # log_path replaces a path that carries personal data (an external id) in the logs.
         headers = contact.headers() if contact is not None else {}
+        log_path = log_path or path
         try:
             response = self.session.request(
                 method,
@@ -291,14 +315,14 @@ class HelpdeskClient:
                 **kwargs,
             )
         except requests.Timeout as exc:
-            logger.warning("Helpdesk API %s %s timed out", method, path)
+            logger.warning("Helpdesk API %s %s timed out", method, log_path)
             raise HelpdeskUnavailable("The helpdesk did not answer in time") from exc
         except requests.RequestException as exc:
-            logger.warning("Helpdesk API %s %s failed: %s", method, path, exc.__class__.__name__)
+            logger.warning("Helpdesk API %s %s failed: %s", method, log_path, exc.__class__.__name__)
             raise HelpdeskUnavailable("The helpdesk cannot be reached") from exc
         if response.status_code >= 300:
             try:
-                raise _error_for(response, method, path)
+                raise _error_for(response, method, log_path)
             finally:
                 response.close()
         return response

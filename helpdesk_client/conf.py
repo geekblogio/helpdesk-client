@@ -25,6 +25,21 @@ DEFAULTS = {
     "HELPDESK_METADATA_RESOLVER": "",
     # Tickets per page in "My requests".
     "HELPDESK_PAGE_SIZE": 20,
+    # Dotted path to a callable(user) -> str: the stable external_user_id of a user. The default
+    # contact resolver and the delete hook both use it, so they always agree on the id.
+    "HELPDESK_USER_ID_RESOLVER": "helpdesk_client.contact.external_id_for_user",
+    # Alias in CACHES for the unread counts, the site config and seen webhook ids.
+    "HELPDESK_CACHE": "default",
+    # Seconds an unread count is cached for the badge (a webhook clears it earlier).
+    "HELPDESK_UNREAD_CACHE_TIMEOUT": 60,
+    # Seconds the badge waits for the API (connect and answer); it must not slow down pages.
+    "HELPDESK_UNREAD_TIMEOUT": 2.0,
+    # Seconds the site config (categories, attachment rules) from GET /config is cached.
+    "HELPDESK_CONFIG_CACHE_TIMEOUT": 300,
+    # Anonymize the user's contact in the helpdesk when the user is deleted.
+    "HELPDESK_DELETE_HOOK": True,
+    # Secret of the site's webhook in the helpdesk; "" disables the webhook receiver (404).
+    "HELPDESK_WEBHOOK_SECRET": "",
 }
 
 

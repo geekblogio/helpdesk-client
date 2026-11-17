@@ -1,0 +1,41 @@
+name: Release
+
+# Create a GitHub Release with auto-generated notes whenever a version tag is
+# pushed (e.g. `git push origin v0.1.0`), as in geekblogio/helpdesk. The notes
+# are built from the merged PRs since the previous tag and grouped per
+# `.github/release.yml`. Websites install the package from the tag:
+# `poetry add git+ssh://git@github.com/geekblogio/helpdesk-client.git#v0.1.0`.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # A tag must name the version the package reports, or installs from the
+      # tag would claim another version.
+      - name: Check that the tag matches the package version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          python3 - <<'EOF'
+          import os, re, sys, tomllib
+          tag = os.environ["TAG"].removeprefix("v")
+          project = tomllib.load(open("pyproject.toml", "rb"))["project"]["version"]
+          package = re.search(r'__version__ = "([^"]+)"', open("helpdesk_client/__init__.py").read()).group(1)
+          print(f"tag {tag}, pyproject {project}, __version__ {package}")
+          sys.exit(0 if tag == project == package else "tag and package version differ")
+          EOF
+
+      - name: Create release with generated notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" --title "$TAG" --generate-notes --verify-tag

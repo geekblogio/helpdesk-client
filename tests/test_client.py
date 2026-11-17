@@ -231,3 +231,33 @@ class ErrorTests(MockedApiTestCase):
                 self.api.reset()
                 with self.assertLogs("helpdesk_client.client", "WARNING"), self.assertRaises(HelpdeskUnavailable):
                     self.call(body=exc)
+
+
+class NewEndpointTests(MockedApiTestCase):
+    def setUp(self):
+        super().setUp()
+        self.client = HelpdeskClient()
+
+    def test_config_without_contact(self):
+        self.api.get(url("config"), json={"name": "WSC"})
+        self.assertEqual(self.client.config("en"), {"name": "WSC"})
+        self.assertEqual(self.api.calls[0].request.params, {"language": "en"})
+        self.assertNotIn("X-Contact-Id", self.api.calls[0].request.headers)
+
+    def test_anonymize_contact_quotes_the_id_and_keeps_it_out_of_the_logs(self):
+        self.api.delete(url("contacts/a%2Fb%20c"), json={"anonymized": True, "tickets": 3})
+        self.assertEqual(self.client.anonymize_contact("a/b c"), {"anonymized": True, "tickets": 3})
+        self.api.upsert(responses.DELETE, url("contacts/a%2Fb%20c"), status=502, body="")
+        with self.assertLogs("helpdesk_client.client", "ERROR") as logs, self.assertRaises(HelpdeskUnavailable):
+            self.client.anonymize_contact("a/b c")
+        self.assertEqual(logs.output, ["ERROR:helpdesk_client.client:Helpdesk API DELETE contacts/<id> answered 502"])
+        self.api.upsert(responses.DELETE, url("contacts/a%2Fb%20c"), status=200, body="no json")
+        with self.assertLogs("helpdesk_client.client", "WARNING") as logs, self.assertRaises(HelpdeskUnavailable):
+            self.client.anonymize_contact("a/b c")
+        self.assertNotIn("a/b", logs.output[0])
+
+    def test_anonymize_contact_needs_a_valid_id(self):
+        for value in ("", "  ", "x" * 256):
+            with self.subTest(value=value[:5]), self.assertRaises(ValueError):
+                self.client.anonymize_contact(value)
+        self.assertEqual(len(self.api.calls), 0)
