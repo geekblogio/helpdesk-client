@@ -1,0 +1,42 @@
+{% extends "helpdesk_client/base.html" %}
+{% load i18n helpdesk_client %}
+{% block helpdesk_title %}{% translate "My requests" %}{% endblock %}
+{% block helpdesk_content %}
+<section class="helpdesk-ticket-list" aria-labelledby="helpdesk-ticket-list-title">
+  <header class="helpdesk-header">
+    <h1 id="helpdesk-ticket-list-title">{% translate "My requests" %}</h1>
+    <p class="helpdesk-actions">
+      <a class="helpdesk-button" href="{% url 'helpdesk_client:ticket_create' %}">{% translate "New request" %}</a>
+    </p>
+  </header>
+
+  {% if tickets %}
+  <ul class="helpdesk-tickets">
+    {% for ticket in tickets %}
+    <li class="helpdesk-ticket helpdesk-ticket--{{ ticket.status }}{% if ticket.unread %} helpdesk-ticket--unread{% endif %}">
+      <a class="helpdesk-ticket-link" href="{% url 'helpdesk_client:ticket_detail' ticket.number %}">{{ ticket.subject }}</a>
+      {% if ticket.unread %}<strong class="helpdesk-unread">{% translate "New reply" %}</strong>{% endif %}
+      <dl class="helpdesk-ticket-meta">
+        <dt>{% translate "Number" %}</dt>
+        <dd>{{ ticket.display_number }}</dd>
+        <dt>{% translate "Status" %}</dt>
+        <dd class="helpdesk-status helpdesk-status--{{ ticket.status }}">{{ ticket.status|helpdesk_status }}</dd>
+        <dt>{% translate "Last update" %}</dt>
+        <dd><time datetime="{{ ticket.updated_at|date:'c' }}">{{ ticket.updated_at|date:"SHORT_DATETIME_FORMAT" }}</time></dd>
+      </dl>
+    </li>
+    {% endfor %}
+  </ul>
+
+  {% if pages > 1 %}
+  <nav class="helpdesk-pagination" aria-label="{% translate 'Pages' %}">
+    {% if previous_page %}<a rel="prev" href="?page={{ previous_page }}">{% translate "Previous" %}</a>{% endif %}
+    <span>{% blocktranslate %}Page {{ page }} of {{ pages }}{% endblocktranslate %}</span>
+    {% if next_page %}<a rel="next" href="?page={{ next_page }}">{% translate "Next" %}</a>{% endif %}
+  </nav>
+  {% endif %}
+  {% else %}
+  <p class="helpdesk-empty">{% translate "You have not sent any requests yet." %}</p>
+  {% endif %}
+</section>
+{% endblock %}

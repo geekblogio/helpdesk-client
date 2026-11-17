@@ -1,0 +1,10 @@
+{% extends "helpdesk_client/base.html" %}
+{% load i18n %}
+{% block helpdesk_title %}{{ error_title }}{% endblock %}
+{% block helpdesk_messages %}{% endblock %}
+{% block helpdesk_content %}
+<section class="helpdesk-error" aria-labelledby="helpdesk-error-title">
+  <h1 id="helpdesk-error-title">{{ error_title }}</h1>
+  <p>{{ error_message }}</p>
+</section>
+{% endblock %}

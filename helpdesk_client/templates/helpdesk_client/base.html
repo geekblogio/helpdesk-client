@@ -1,0 +1,22 @@
+{% extends helpdesk_base_template|default:"base.html" %}
+{% load i18n %}
+{% comment %}
+  All support pages extend this template. It fits them into the website's layout
+  (HELPDESK_BASE_TEMPLATE, blocks "title" and "content"). If the layout uses other
+  block names or already shows Django messages, override this file in the website.
+{% endcomment %}
+{% block title %}{% block helpdesk_title %}{% translate "Support" %}{% endblock %}{% endblock %}
+{% block content %}
+<div class="helpdesk">
+  {% block helpdesk_messages %}
+  {% if messages %}
+  <ul class="helpdesk-notices">
+    {% for message in messages %}
+    <li class="helpdesk-notice{% if message.tags %} helpdesk-notice--{{ message.tags }}{% endif %}" role="status">{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endblock %}
+  {% block helpdesk_content %}{% endblock %}
+</div>
+{% endblock %}

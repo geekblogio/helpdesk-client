@@ -1,0 +1,58 @@
+[project]
+name = "helpdesk-client"
+version = "0.1.0.dev0"
+description = "Django app that lets logged-in users of a website talk to the self-hosted helpdesk"
+authors = [{ name = "Christian Prehl", email = "christian@prehl.de" }]
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.14,<4.0"
+dependencies = [
+  "Django>=6.1,<7.0",
+  "requests>=2.32,<3.0",
+]
+
+[tool.poetry]
+packages = [{ include = "helpdesk_client" }]
+# Compiled translations ship with the package (installs from a Git tag build from source).
+include = [{ path = "helpdesk_client/locale/**/*.mo", format = ["sdist", "wheel"] }]
+
+[tool.poetry.group.dev.dependencies]
+coverage = ">=7.17.3,<8.0.0"
+responses = ">=0.25.8,<0.26"
+ruff = ">=0.17.5,<0.18"
+
+[build-system]
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "D", "DJ"]
+ignore = [
+  "E501",  # line length is enforced by the formatter, not the linter
+  # Docstrings: enforce quality, not presence.
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "D105",
+  "D106",
+  "D107",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+known-first-party = ["helpdesk_client", "tests"]
+
+[tool.coverage.run]
+source = ["helpdesk_client"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true

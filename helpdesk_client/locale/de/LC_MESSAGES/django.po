@@ -1,0 +1,287 @@
+# Translations of helpdesk_client.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: helpdesk-client\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-17 08:59+0000\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps.py templates/helpdesk_client/base.html
+msgid "Support"
+msgstr "Support"
+
+#: forms.py
+#, python-format
+msgid "You can attach at most %(max)d file."
+msgid_plural "You can attach at most %(max)d files."
+msgstr[0] "Sie können höchstens %(max)d Datei anhängen."
+msgstr[1] "Sie können höchstens %(max)d Dateien anhängen."
+
+#: forms.py
+#, python-format
+msgid "%(name)s: this file type is not allowed. Allowed are %(types)s."
+msgstr "%(name)s: Dieser Dateityp ist nicht erlaubt. Erlaubt sind %(types)s."
+
+#: forms.py
+#, python-format
+msgid "%(name)s is empty."
+msgstr "%(name)s ist leer."
+
+#: forms.py
+#, python-format
+msgid "%(name)s is larger than %(max)s."
+msgstr "%(name)s ist größer als %(max)s."
+
+#: forms.py
+msgid "Subject"
+msgstr "Betreff"
+
+#: forms.py templates/helpdesk_client/ticket_detail.html
+msgid "Category"
+msgstr "Kategorie"
+
+#: forms.py
+msgid "Message"
+msgstr "Nachricht"
+
+#: forms.py
+msgid "You can use Markdown."
+msgstr "Sie können Markdown verwenden."
+
+#: forms.py templates/helpdesk_client/ticket_detail.html
+msgid "Attachments"
+msgstr "Anhänge"
+
+#: forms.py
+msgid "Your reply"
+msgstr "Ihre Antwort"
+
+#: forms.py
+#, python-format
+msgid ""
+"Up to %(count)d files, each up to %(size)s: images (PNG, JPEG, GIF, WebP), "
+"PDF, TXT, LOG."
+msgstr ""
+"Bis zu %(count)d Dateien, je bis zu %(size)s: Bilder (PNG, JPEG, GIF, WebP), "
+"PDF, TXT, LOG."
+
+#: templates/helpdesk_client/ticket_detail.html
+#: templates/helpdesk_client/ticket_form.html
+msgid "Back to my requests"
+msgstr "Zurück zu meinen Anfragen"
+
+#: templates/helpdesk_client/ticket_detail.html
+#: templates/helpdesk_client/ticket_list.html
+msgid "Number"
+msgstr "Nummer"
+
+#: templates/helpdesk_client/ticket_detail.html
+#: templates/helpdesk_client/ticket_list.html
+msgid "Status"
+msgstr "Status"
+
+#: templates/helpdesk_client/ticket_detail.html
+msgid "Created"
+msgstr "Erstellt"
+
+#: templates/helpdesk_client/ticket_detail.html
+msgid "History"
+msgstr "Verlauf"
+
+#: templates/helpdesk_client/ticket_detail.html
+msgid "You"
+msgstr "Sie"
+
+#: templates/helpdesk_client/ticket_detail.html
+msgid "Support team"
+msgstr "Support-Team"
+
+#: templates/helpdesk_client/ticket_detail.html
+msgid "This request is closed and can no longer be answered."
+msgstr "Diese Anfrage ist geschlossen und kann nicht mehr beantwortet werden."
+
+#: templates/helpdesk_client/ticket_detail.html
+msgid "Open a new request"
+msgstr "Neue Anfrage stellen"
+
+#: templates/helpdesk_client/ticket_detail.html
+msgid "Reply"
+msgstr "Antworten"
+
+#: templates/helpdesk_client/ticket_detail.html
+#, python-format
+msgid "This request is closed. A reply until %(until)s reopens it."
+msgstr ""
+"Diese Anfrage ist geschlossen. Eine Antwort bis zum %(until)s öffnet sie "
+"wieder."
+
+#: templates/helpdesk_client/ticket_detail.html
+msgid "Send reply"
+msgstr "Antwort senden"
+
+#: templates/helpdesk_client/ticket_detail.html
+msgid "Issue solved?"
+msgstr "Anliegen erledigt?"
+
+#: templates/helpdesk_client/ticket_detail.html
+msgid "If you no longer need help, you can close this request."
+msgstr ""
+"Wenn Sie keine Hilfe mehr brauchen, können Sie diese Anfrage schließen."
+
+#: templates/helpdesk_client/ticket_detail.html
+msgid "Close request"
+msgstr "Anfrage schließen"
+
+#: templates/helpdesk_client/ticket_form.html
+#: templates/helpdesk_client/ticket_list.html
+msgid "New request"
+msgstr "Neue Anfrage"
+
+#: templates/helpdesk_client/ticket_form.html
+msgid "Send request"
+msgstr "Anfrage senden"
+
+#: templates/helpdesk_client/ticket_list.html
+msgid "My requests"
+msgstr "Meine Anfragen"
+
+#: templates/helpdesk_client/ticket_list.html
+msgid "New reply"
+msgstr "Neue Antwort"
+
+#: templates/helpdesk_client/ticket_list.html
+msgid "Last update"
+msgstr "Zuletzt geändert"
+
+#: templates/helpdesk_client/ticket_list.html
+msgid "Pages"
+msgstr "Seiten"
+
+#: templates/helpdesk_client/ticket_list.html
+msgid "Previous"
+msgstr "Zurück"
+
+#: templates/helpdesk_client/ticket_list.html
+#, python-format
+msgid "Page %(page)s of %(pages)s"
+msgstr "Seite %(page)s von %(pages)s"
+
+#: templates/helpdesk_client/ticket_list.html
+msgid "Next"
+msgstr "Weiter"
+
+#: templates/helpdesk_client/ticket_list.html
+msgid "You have not sent any requests yet."
+msgstr "Sie haben noch keine Anfragen gestellt."
+
+#: templatetags/helpdesk_client.py
+msgid "New"
+msgstr "Neu"
+
+#: templatetags/helpdesk_client.py
+msgid "In progress"
+msgstr "In Bearbeitung"
+
+#: templatetags/helpdesk_client.py
+msgid "Waiting for your reply"
+msgstr "Wartet auf Ihre Antwort"
+
+#: templatetags/helpdesk_client.py
+msgid "Closed"
+msgstr "Geschlossen"
+
+#: views.py
+msgid "Support is not available for your account"
+msgstr "Der Support ist für Ihr Konto nicht verfügbar"
+
+#: views.py
+msgid ""
+"Your account cannot use the support pages at the moment. Please contact us "
+"another way."
+msgstr ""
+"Ihr Konto kann die Support-Seiten derzeit nicht nutzen. Bitte kontaktieren "
+"Sie uns auf einem anderen Weg."
+
+#: views.py
+msgid "Too many requests"
+msgstr "Zu viele Anfragen"
+
+#: views.py
+msgid ""
+"You have sent many requests in a short time. Please wait a moment and try "
+"again."
+msgstr ""
+"Sie haben in kurzer Zeit viele Anfragen gesendet. Bitte warten Sie einen "
+"Moment und versuchen Sie es erneut."
+
+#: views.py
+msgid "Support is temporarily unavailable"
+msgstr "Der Support ist vorübergehend nicht erreichbar"
+
+#: views.py
+msgid ""
+"We cannot reach our support system right now. Please try again in a few "
+"minutes."
+msgstr ""
+"Unser Support-System ist gerade nicht erreichbar. Bitte versuchen Sie es in "
+"ein paar Minuten erneut."
+
+#: views.py
+msgid "This value was not accepted."
+msgstr "Dieser Wert wurde nicht angenommen."
+
+#: views.py
+msgid "Your entries could not be saved. Please check them and try again."
+msgstr ""
+"Ihre Eingaben konnten nicht gespeichert werden. Bitte prüfen Sie sie und "
+"versuchen Sie es erneut."
+
+#: views.py
+msgid "Too many files attached."
+msgstr "Zu viele Dateien angehängt."
+
+#: views.py
+msgid "The attachments are too large together."
+msgstr "Die Anhänge sind zusammen zu groß."
+
+#: views.py
+#, python-format
+msgid "%(name)s is too large."
+msgstr "%(name)s ist zu groß."
+
+#: views.py
+msgid "A file is too large."
+msgstr "Eine Datei ist zu groß."
+
+#: views.py
+#, python-format
+msgid ""
+"%(name)s was not accepted: its content does not match an allowed file type."
+msgstr ""
+"%(name)s wurde nicht angenommen: Der Inhalt passt zu keinem erlaubten "
+"Dateityp."
+
+#: views.py
+msgid ""
+"A file was not accepted: its content does not match an allowed file type."
+msgstr ""
+"Eine Datei wurde nicht angenommen: Der Inhalt passt zu keinem erlaubten "
+"Dateityp."
+
+#: views.py
+#, python-format
+msgid "Your request %(number)s has been sent."
+msgstr "Ihre Anfrage %(number)s wurde gesendet."
+
+#: views.py
+msgid "Your reply has been sent."
+msgstr "Ihre Antwort wurde gesendet."
+
+#: views.py
+msgid "The request has been closed."
+msgstr "Die Anfrage wurde geschlossen."
