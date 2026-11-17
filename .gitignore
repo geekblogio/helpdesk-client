@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+
+# Tests / coverage
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Tool caches
+.ruff_cache/
+
+# Local test project and Poetry settings
+poetry.toml
+db.sqlite3
+.env
+
+# Compiled translations are committed on purpose: installs from a Git tag build
+# from source and must find them (helpdesk_client/locale/*/LC_MESSAGES/django.mo).
