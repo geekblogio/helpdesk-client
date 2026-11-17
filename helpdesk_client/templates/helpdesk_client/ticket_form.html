@@ -1,0 +1,22 @@
+{% extends "helpdesk_client/base.html" %}
+{% load i18n %}
+{% block helpdesk_title %}{% translate "New request" %}{% endblock %}
+{% block helpdesk_content %}
+<section class="helpdesk-ticket-create" aria-labelledby="helpdesk-ticket-create-title">
+  <header class="helpdesk-header">
+    <p class="helpdesk-back"><a href="{% url 'helpdesk_client:ticket_list' %}">{% translate "Back to my requests" %}</a></p>
+    <h1 id="helpdesk-ticket-create-title">{% translate "New request" %}</h1>
+  </header>
+
+  <form class="helpdesk-form" method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {% include "helpdesk_client/includes/form_errors.html" %}
+    {% for field in form %}
+      {% include "helpdesk_client/includes/field.html" %}
+    {% endfor %}
+    <p class="helpdesk-actions">
+      <button class="helpdesk-button" type="submit">{% translate "Send request" %}</button>
+    </p>
+  </form>
+</section>
+{% endblock %}

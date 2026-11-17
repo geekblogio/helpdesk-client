@@ -1,0 +1,83 @@
+{% extends "helpdesk_client/base.html" %}
+{% load i18n helpdesk_client %}
+{% block helpdesk_title %}{{ ticket.display_number }} {{ ticket.subject }}{% endblock %}
+{% block helpdesk_content %}
+<article class="helpdesk-ticket-detail helpdesk-ticket--{{ ticket.status }}" aria-labelledby="helpdesk-ticket-title">
+  <header class="helpdesk-header">
+    <p class="helpdesk-back"><a href="{% url 'helpdesk_client:ticket_list' %}">{% translate "Back to my requests" %}</a></p>
+    <h1 id="helpdesk-ticket-title">{{ ticket.subject }}</h1>
+    <dl class="helpdesk-ticket-meta">
+      <dt>{% translate "Number" %}</dt>
+      <dd>{{ ticket.display_number }}</dd>
+      <dt>{% translate "Status" %}</dt>
+      <dd class="helpdesk-status helpdesk-status--{{ ticket.status }}">{{ ticket.status|helpdesk_status }}</dd>
+      {% if ticket.category %}
+      <dt>{% translate "Category" %}</dt>
+      <dd>{{ ticket.category.name }}</dd>
+      {% endif %}
+      <dt>{% translate "Created" %}</dt>
+      <dd><time datetime="{{ ticket.created_at|date:'c' }}">{{ ticket.created_at|date:"SHORT_DATETIME_FORMAT" }}</time></dd>
+    </dl>
+  </header>
+
+  <section class="helpdesk-history" aria-labelledby="helpdesk-history-title">
+    <h2 id="helpdesk-history-title">{% translate "History" %}</h2>
+    <ol class="helpdesk-thread">
+      {% for message in ticket.messages %}
+      <li class="helpdesk-entry helpdesk-entry--{{ message.author_type }}">
+        <article>
+          <header class="helpdesk-entry-header">
+            <strong class="helpdesk-entry-author">{% if message.author_type == "contact" %}{% translate "You" %}{% else %}{{ message.author_name|default:_("Support team") }}{% endif %}</strong>
+            <time datetime="{{ message.created_at|date:'c' }}">{{ message.created_at|date:"SHORT_DATETIME_FORMAT" }}</time>
+          </header>
+          {# body_html is rendered and sanitized by the helpdesk (markdown-it-py + nh3). #}
+          <div class="helpdesk-entry-body">{{ message.body_html|safe }}</div>
+          {% if message.attachments %}
+          <ul class="helpdesk-attachments" aria-label="{% translate 'Attachments' %}">
+            {% for attachment in message.attachments %}
+            <li><a href="{% url 'helpdesk_client:attachment_download' ticket.number attachment.id %}" download>{{ attachment.filename }}</a> <small>({{ attachment.size|filesizeformat }})</small></li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </article>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  {% if reopen_window_expired or not ticket.can_reply %}
+  <p class="helpdesk-notice helpdesk-notice--info" role="status">
+    {% translate "This request is closed and can no longer be answered." %}
+    <a href="{% url 'helpdesk_client:ticket_create' %}">{% translate "Open a new request" %}</a>
+  </p>
+  {% elif reply_form %}
+  <section class="helpdesk-reply" aria-labelledby="helpdesk-reply-title">
+    <h2 id="helpdesk-reply-title">{% translate "Reply" %}</h2>
+    {% if ticket.status == "closed" and ticket.reopen_until %}
+    <p class="helpdesk-notice helpdesk-notice--info">{% blocktranslate with until=ticket.reopen_until|date:"SHORT_DATE_FORMAT" %}This request is closed. A reply until {{ until }} reopens it.{% endblocktranslate %}</p>
+    {% endif %}
+    <form class="helpdesk-form" method="post" action="{% url 'helpdesk_client:ticket_reply' ticket.number %}" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      {% include "helpdesk_client/includes/form_errors.html" with form=reply_form %}
+      {% for field in reply_form %}
+        {% include "helpdesk_client/includes/field.html" %}
+      {% endfor %}
+      <p class="helpdesk-actions">
+        <button class="helpdesk-button" type="submit">{% translate "Send reply" %}</button>
+      </p>
+    </form>
+  </section>
+  {% endif %}
+
+  {% if ticket.can_close %}
+  <section class="helpdesk-close" aria-labelledby="helpdesk-close-title">
+    <h2 id="helpdesk-close-title">{% translate "Issue solved?" %}</h2>
+    <form method="post" action="{% url 'helpdesk_client:ticket_close' ticket.number %}">
+      {% csrf_token %}
+      <p>{% translate "If you no longer need help, you can close this request." %}</p>
+      <p class="helpdesk-actions"><button class="helpdesk-button helpdesk-button--secondary" type="submit">{% translate "Close request" %}</button></p>
+    </form>
+  </section>
+  {% endif %}
+</article>
+{% endblock %}
