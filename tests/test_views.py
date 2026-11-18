@@ -112,7 +112,7 @@ class ErrorPageTests(LoggedInTestCase):
         self.api.get(url("tickets"), status=403, json=error_json("contact_blocked"))
         response = self.client.get(self.path)
         self.assertEqual(response.status_code, 403)
-        self.assertContains(response, "Der Support ist für Ihr Konto nicht verfügbar", status_code=403)
+        self.assertContains(response, "Der Support ist für dein Konto nicht verfügbar", status_code=403)
 
     def test_rate_limited(self):
         self.api.get(url("tickets"), status=429, json=error_json("rate_limited"), headers={"Retry-After": "10"})
@@ -184,7 +184,9 @@ class TicketCreateTests(LoggedInTestCase):
             },
         )
         self.assertEqual(self.contact_headers(self.api.calls[-1])["X-Contact-Id"], str(self.user.pk))
-        self.assertEqual([str(m) for m in get_messages(response.wsgi_request)], ["Ihre Anfrage WSC-13 wurde gesendet."])
+        self.assertEqual(
+            [str(m) for m in get_messages(response.wsgi_request)], ["Deine Anfrage WSC-13 wurde gesendet."]
+        )
 
     def test_attachments_are_sent_as_multipart(self):
         self.api.add(responses.POST, url("tickets"), json=ticket_json(13), status=201)
@@ -203,7 +205,7 @@ class TicketCreateTests(LoggedInTestCase):
         cases = [
             ([SimpleUploadedFile("tool.exe", b"MZ")], "tool.exe: Dieser Dateityp ist nicht erlaubt."),
             ([SimpleUploadedFile("empty.txt", b"")], "empty.txt ist leer."),
-            ([SimpleUploadedFile(f"{i}.txt", b"x") for i in range(6)], "Sie können höchstens 5 Dateien anhängen."),
+            ([SimpleUploadedFile(f"{i}.txt", b"x") for i in range(6)], "Du kannst höchstens 5 Dateien anhängen."),
         ]
         for files, message in cases:
             with self.subTest(message=message):
@@ -240,7 +242,7 @@ class TicketCreateTests(LoggedInTestCase):
             (
                 {"status": 422, "json": error_json("invalid_input", "Unknown category")},
                 None,
-                "Ihre Eingaben konnten nicht gespeichert werden",
+                "Deine Eingaben konnten nicht gespeichert werden",
             ),
             ({"status": 413, "body": "<html>", "content_type": "text/html"}, "attachments", "zusammen zu groß"),
             ({"status": 422, "json": error_json("too_many_attachments")}, "attachments", "Zu viele Dateien"),

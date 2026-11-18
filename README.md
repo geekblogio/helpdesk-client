@@ -29,12 +29,12 @@ Python 3.14+, Django 6.1+, `requests`.
 Das Paket wird per Git-Tag installiert, z. B. in der `pyproject.toml` des Webauftritts:
 
 ```bash
-poetry add git+ssh://git@github.com/geekblogio/helpdesk-client.git#v0.1.0
+poetry add git+ssh://git@github.com/geekblogio/helpdesk-client.git#v0.1.1
 ```
 
 ```toml
 [tool.poetry.dependencies]
-helpdesk-client = { git = "ssh://git@github.com/geekblogio/helpdesk-client.git", tag = "v0.1.0" }
+helpdesk-client = { git = "ssh://git@github.com/geekblogio/helpdesk-client.git", tag = "v0.1.1" }
 ```
 
 Ein Update ist ein neuer Tag in der URL bzw. bei `tag` und `poetry update helpdesk-client`. Die
