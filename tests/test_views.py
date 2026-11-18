@@ -184,7 +184,9 @@ class TicketCreateTests(LoggedInTestCase):
             },
         )
         self.assertEqual(self.contact_headers(self.api.calls[-1])["X-Contact-Id"], str(self.user.pk))
-        self.assertEqual([str(m) for m in get_messages(response.wsgi_request)], ["Deine Anfrage WSC-13 wurde gesendet."])
+        self.assertEqual(
+            [str(m) for m in get_messages(response.wsgi_request)], ["Deine Anfrage WSC-13 wurde gesendet."]
+        )
 
     def test_attachments_are_sent_as_multipart(self):
         self.api.add(responses.POST, url("tickets"), json=ticket_json(13), status=201)
