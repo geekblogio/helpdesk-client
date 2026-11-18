@@ -81,7 +81,7 @@ class FormRulesFromConfigTests(LoggedInTestCase):
         self.assertEqual(
             form.errors["attachments"],
             [
-                "Sie können höchstens 1 Datei anhängen.",
+                "Du kannst höchstens 1 Datei anhängen.",
                 "b.png: Dieser Dateityp ist nicht erlaubt. Erlaubt sind .txt.",
             ],
         )
@@ -132,7 +132,7 @@ class CategoryErrorTests(LoggedInTestCase):
         self.assertEqual(response.status_code, 200)
         form = response.context["form"]
         self.assertEqual(
-            form.errors["category"], ["Diese Kategorie kann nicht gewählt werden. Bitte wählen Sie eine andere."]
+            form.errors["category"], ["Diese Kategorie kann nicht gewählt werden. Bitte wähle eine andere."]
         )
         self.assertNotIn("__all__", form.errors)
         self.assertNotContains(response, "Rechnung</option>")
@@ -157,7 +157,7 @@ class CategoryErrorTests(LoggedInTestCase):
         response = self.client.post(self.path, self.form)
         self.assertEqual(
             response.context["form"].errors["__all__"],
-            ["Ihre Eingaben konnten nicht gespeichert werden. Bitte prüfen Sie sie und versuchen Sie es erneut."],
+            ["Deine Eingaben konnten nicht gespeichert werden. Bitte prüfe sie und versuche es erneut."],
         )
 
 

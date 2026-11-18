@@ -27,8 +27,8 @@ msgstr[1] "Bis zu %(count)d Dateien, je bis zu %(size)s. Erlaubte Typen: %(types
 #, python-format
 msgid "You can attach at most %(max)d file."
 msgid_plural "You can attach at most %(max)d files."
-msgstr[0] "Sie können höchstens %(max)d Datei anhängen."
-msgstr[1] "Sie können höchstens %(max)d Dateien anhängen."
+msgstr[0] "Du kannst höchstens %(max)d Datei anhängen."
+msgstr[1] "Du kannst höchstens %(max)d Dateien anhängen."
 
 #: forms.py
 #, python-format
@@ -59,7 +59,7 @@ msgstr "Nachricht"
 
 #: forms.py
 msgid "You can use Markdown."
-msgstr "Sie können Markdown verwenden."
+msgstr "Du kannst Markdown verwenden."
 
 #: forms.py templates/helpdesk_client/ticket_detail.html
 msgid "Attachments"
@@ -67,7 +67,7 @@ msgstr "Anhänge"
 
 #: forms.py
 msgid "Your reply"
-msgstr "Ihre Antwort"
+msgstr "Deine Antwort"
 
 #: models.py
 msgid "external user id"
@@ -129,7 +129,7 @@ msgstr "Verlauf"
 
 #: templates/helpdesk_client/ticket_detail.html
 msgid "You"
-msgstr "Sie"
+msgstr "Du"
 
 #: templates/helpdesk_client/ticket_detail.html
 msgid "Support team"
@@ -165,7 +165,7 @@ msgstr "Anliegen erledigt?"
 #: templates/helpdesk_client/ticket_detail.html
 msgid "If you no longer need help, you can close this request."
 msgstr ""
-"Wenn Sie keine Hilfe mehr brauchen, können Sie diese Anfrage schließen."
+"Wenn du keine Hilfe mehr brauchst, kannst du diese Anfrage schließen."
 
 #: templates/helpdesk_client/ticket_detail.html
 msgid "Close request"
@@ -211,7 +211,7 @@ msgstr "Weiter"
 
 #: templates/helpdesk_client/ticket_list.html
 msgid "You have not sent any requests yet."
-msgstr "Sie haben noch keine Anfragen gestellt."
+msgstr "Du hast noch keine Anfragen gestellt."
 
 #: templatetags/helpdesk_client.py
 msgid "New"
@@ -223,7 +223,7 @@ msgstr "In Bearbeitung"
 
 #: templatetags/helpdesk_client.py
 msgid "Waiting for your reply"
-msgstr "Wartet auf Ihre Antwort"
+msgstr "Wartet auf deine Antwort"
 
 #: templatetags/helpdesk_client.py
 msgid "Closed"
@@ -231,15 +231,15 @@ msgstr "Geschlossen"
 
 #: views.py
 msgid "Support is not available for your account"
-msgstr "Der Support ist für Ihr Konto nicht verfügbar"
+msgstr "Der Support ist für dein Konto nicht verfügbar"
 
 #: views.py
 msgid ""
 "Your account cannot use the support pages at the moment. Please contact us "
 "another way."
 msgstr ""
-"Ihr Konto kann die Support-Seiten derzeit nicht nutzen. Bitte kontaktieren "
-"Sie uns auf einem anderen Weg."
+"Dein Konto kann die Support-Seiten derzeit nicht nutzen. Bitte kontaktiere "
+"uns auf einem anderen Weg."
 
 #: views.py
 msgid "Too many requests"
@@ -250,8 +250,8 @@ msgid ""
 "You have sent many requests in a short time. Please wait a moment and try "
 "again."
 msgstr ""
-"Sie haben in kurzer Zeit viele Anfragen gesendet. Bitte warten Sie einen "
-"Moment und versuchen Sie es erneut."
+"Du hast in kurzer Zeit viele Anfragen gesendet. Bitte warte einen Moment "
+"und versuche es erneut."
 
 #: views.py
 msgid "Support is temporarily unavailable"
@@ -262,12 +262,12 @@ msgid ""
 "We cannot reach our support system right now. Please try again in a few "
 "minutes."
 msgstr ""
-"Unser Support-System ist gerade nicht erreichbar. Bitte versuchen Sie es in "
-"ein paar Minuten erneut."
+"Unser Support-System ist gerade nicht erreichbar. Bitte versuche es in ein "
+"paar Minuten erneut."
 
 #: views.py
 msgid "This category cannot be chosen. Please choose another one."
-msgstr "Diese Kategorie kann nicht gewählt werden. Bitte wählen Sie eine andere."
+msgstr "Diese Kategorie kann nicht gewählt werden. Bitte wähle eine andere."
 
 #: views.py
 msgid "This value was not accepted."
@@ -276,8 +276,8 @@ msgstr "Dieser Wert wurde nicht angenommen."
 #: views.py
 msgid "Your entries could not be saved. Please check them and try again."
 msgstr ""
-"Ihre Eingaben konnten nicht gespeichert werden. Bitte prüfen Sie sie und "
-"versuchen Sie es erneut."
+"Deine Eingaben konnten nicht gespeichert werden. Bitte prüfe sie und "
+"versuche es erneut."
 
 #: views.py
 msgid "Too many files attached."
@@ -314,11 +314,11 @@ msgstr ""
 #: views.py
 #, python-format
 msgid "Your request %(number)s has been sent."
-msgstr "Ihre Anfrage %(number)s wurde gesendet."
+msgstr "Deine Anfrage %(number)s wurde gesendet."
 
 #: views.py
 msgid "Your reply has been sent."
-msgstr "Ihre Antwort wurde gesendet."
+msgstr "Deine Antwort wurde gesendet."
 
 #: views.py
 msgid "The request has been closed."
